@@ -28,25 +28,26 @@ const (
 
 	LT     TokenType = "<"
 	GT     TokenType = ">"
+	LT_EQ  TokenType = "<="
+	GT_EQ  TokenType = ">="
 	EQ     TokenType = "=="
 	NOT_EQ TokenType = "!="
 
 	// Delimiters
 	COMMA     TokenType = ","
 	SEMICOLON TokenType = ";"
-	NEWLINE   TokenType = "\n"
 
 	ARROW  TokenType = "=>"
 	LPAREN TokenType = "("
 	RPAREN TokenType = ")"
 	LBRACE TokenType = "{"
 	RBRACE TokenType = "}"
-	// LBRACKET TokenType = "["
-	// RBRACKET TokenType = "]"
 
 	// Keywords
 	TRUE  TokenType = "TRUE"
 	FALSE TokenType = "FALSE"
+	OR    TokenType = "OR"
+	AND   TokenType = "AND"
 	IF    TokenType = "IF"
 	ELSE  TokenType = "ELSE"
 )
@@ -54,6 +55,8 @@ const (
 var keywords = map[string]TokenType{
 	"true":  TRUE,
 	"false": FALSE,
+	"or":    OR,
+	"and":   AND,
 	"if":    IF,
 	"else":  ELSE,
 }
