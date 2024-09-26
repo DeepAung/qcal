@@ -8,35 +8,39 @@ import (
 )
 
 func TestNextToken(t *testing.T) {
-	input := `
-x = 123;
+	input := `x = 123;
 y = 123.
 y = .20;
-y = .;
-y = 123.20
+y	 = .;
+y    = 123.20
 x = y + y - x * y / x ^ y % y
 f = (a, b) => a + b;
 f(e, pi)
-	`
+`
 	expects := []token.Token{
 		{Type: token.IDENT, Literal: "x"},
 		{Type: token.ASSIGN, Literal: "="},
 		{Type: token.NUMBER, Literal: "123"},
 		{Type: token.SEMICOLON, Literal: ";"},
+		{Type: token.NEWLINE, Literal: "\n"},
 		{Type: token.IDENT, Literal: "y"},
 		{Type: token.ASSIGN, Literal: "="},
 		{Type: token.NUMBER, Literal: "123."},
+		{Type: token.NEWLINE, Literal: "\n"},
 		{Type: token.IDENT, Literal: "y"},
 		{Type: token.ASSIGN, Literal: "="},
 		{Type: token.NUMBER, Literal: ".20"},
 		{Type: token.SEMICOLON, Literal: ";"},
+		{Type: token.NEWLINE, Literal: "\n"},
 		{Type: token.IDENT, Literal: "y"},
 		{Type: token.ASSIGN, Literal: "="},
 		{Type: token.ILLEGAL, Literal: "."},
 		{Type: token.SEMICOLON, Literal: ";"},
+		{Type: token.NEWLINE, Literal: "\n"},
 		{Type: token.IDENT, Literal: "y"},
 		{Type: token.ASSIGN, Literal: "="},
 		{Type: token.NUMBER, Literal: "123.20"},
+		{Type: token.NEWLINE, Literal: "\n"},
 		{Type: token.IDENT, Literal: "x"},
 		{Type: token.ASSIGN, Literal: "="},
 		{Type: token.IDENT, Literal: "y"},
@@ -52,6 +56,7 @@ f(e, pi)
 		{Type: token.IDENT, Literal: "y"},
 		{Type: token.PERCENT, Literal: "%"},
 		{Type: token.IDENT, Literal: "y"},
+		{Type: token.NEWLINE, Literal: "\n"},
 		{Type: token.IDENT, Literal: "f"},
 		{Type: token.ASSIGN, Literal: "="},
 		{Type: token.LPAREN, Literal: "("},
@@ -64,12 +69,14 @@ f(e, pi)
 		{Type: token.PLUS, Literal: "+"},
 		{Type: token.IDENT, Literal: "b"},
 		{Type: token.SEMICOLON, Literal: ";"},
+		{Type: token.NEWLINE, Literal: "\n"},
 		{Type: token.IDENT, Literal: "f"},
 		{Type: token.LPAREN, Literal: "("},
 		{Type: token.CONSTANT, Literal: "e"},
 		{Type: token.COMMA, Literal: ","},
 		{Type: token.CONSTANT, Literal: "pi"},
 		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.NEWLINE, Literal: "\n"},
 		{Type: token.EOF, Literal: ""},
 	}
 
