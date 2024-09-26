@@ -1,17 +1,11 @@
-package main
+package calculator
 
 import (
-	"context"
 	"errors"
 	"fmt"
-	"log"
 	"math"
-	"net"
 
-	pb "github.com/DeepAung/calculator-grpc/calculator"
-	"github.com/DeepAung/calculator-grpc/constant"
-	"github.com/DeepAung/calculator-grpc/server/stack"
-	"google.golang.org/grpc"
+	"github.com/DeepAung/qcal/internal/stack"
 )
 
 var ErrInvalidExpression = errors.New("invalid expression")
@@ -34,17 +28,19 @@ var associativity = map[byte]byte{
 	'(': 'L',
 }
 
-type calculatorServer struct {
-	pb.UnimplementedCalculatorServer
+type calculator struct{}
+
+func NewCalculator() *calculator {
+	return &calculator{}
 }
 
-func (s *calculatorServer) Calculate(ctx context.Context, exp *pb.Expression) (*pb.Result, error) {
-	result, err := parseExpression([]byte(exp.Expression))
+func (s *calculator) Calculate(exp []byte) (float64, error) {
+	result, err := parseExpression(exp)
 	if err != nil {
-		return nil, err
+		return 0, err
 	}
 
-	return &pb.Result{Result: result}, nil
+	return result, nil
 }
 
 func parseExpression(exp []byte) (float64, error) {
@@ -187,17 +183,4 @@ func evalInfix(a float64, op byte, b float64) (float64, error) {
 	default:
 		return 0, fmt.Errorf("invalid operator: %c", op)
 	}
-}
-
-func main() {
-	lis, err := net.Listen("tcp", constant.Address)
-	if err != nil {
-		log.Fatalf("net.Listen failed: %v", err)
-	}
-	defer lis.Close()
-	grpcServer := grpc.NewServer()
-	pb.RegisterCalculatorServer(grpcServer, &calculatorServer{})
-
-	log.Print("server running at: ", lis.Addr())
-	grpcServer.Serve(lis)
 }
