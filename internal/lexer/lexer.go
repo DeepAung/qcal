@@ -22,7 +22,12 @@ func (l *Lexer) NextToken() token.Token {
 
 	switch l.ch {
 	case '=':
-		if l.peekChar() == '>' {
+		peekCh := l.peekChar()
+		if peekCh == '=' {
+			l.readChar()
+			tok.Literal = "=="
+			tok.Type = token.EQ
+		} else if peekCh == '>' {
 			l.readChar()
 			tok.Literal = "=>"
 			tok.Type = token.ARROW
@@ -42,7 +47,17 @@ func (l *Lexer) NextToken() token.Token {
 	case '^':
 		tok = newToken(token.CARET, l.ch)
 	case '!':
-		tok = newToken(token.BANG, l.ch)
+		if l.peekChar() == '=' {
+			l.readChar()
+			tok.Literal = "!="
+			tok.Type = token.NOT_EQ
+		} else {
+			tok = newToken(token.BANG, l.ch)
+		}
+	case '<':
+		tok = newToken(token.LT, l.ch)
+	case '>':
+		tok = newToken(token.GT, l.ch)
 	case ',':
 		tok = newToken(token.COMMA, l.ch)
 	case ';':
@@ -53,6 +68,10 @@ func (l *Lexer) NextToken() token.Token {
 		tok = newToken(token.LPAREN, l.ch)
 	case ')':
 		tok = newToken(token.RPAREN, l.ch)
+	case '{':
+		tok = newToken(token.LBRACE, l.ch)
+	case '}':
+		tok = newToken(token.RBRACE, l.ch)
 	case '.':
 		if !isDigit(l.peekChar()) {
 			tok = newToken(token.ILLEGAL, l.ch)

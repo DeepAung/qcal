@@ -16,6 +16,8 @@ y    = 123.20
 x = y + y - x * y / x ^ y % y
 f = (a, b) => a + b;
 f(e, pi)
+x = if (1 < 2) { false } else { true }
+< > == !=
 `
 	expects := []token.Token{
 		{Type: token.IDENT, Literal: "x"},
@@ -76,6 +78,27 @@ f(e, pi)
 		{Type: token.COMMA, Literal: ","},
 		{Type: token.CONSTANT, Literal: "pi"},
 		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.NEWLINE, Literal: "\n"},
+		{Type: token.IDENT, Literal: "x"},
+		{Type: token.ASSIGN, Literal: "="},
+		{Type: token.IF, Literal: "if"},
+		{Type: token.LPAREN, Literal: "("},
+		{Type: token.NUMBER, Literal: "1"},
+		{Type: token.LT, Literal: "<"},
+		{Type: token.NUMBER, Literal: "2"},
+		{Type: token.RPAREN, Literal: ")"},
+		{Type: token.LBRACE, Literal: "{"},
+		{Type: token.FALSE, Literal: "false"},
+		{Type: token.RBRACE, Literal: "}"},
+		{Type: token.ELSE, Literal: "else"},
+		{Type: token.LBRACE, Literal: "{"},
+		{Type: token.TRUE, Literal: "true"},
+		{Type: token.RBRACE, Literal: "}"},
+		{Type: token.NEWLINE, Literal: "\n"},
+		{Type: token.LT, Literal: "<"},
+		{Type: token.GT, Literal: ">"},
+		{Type: token.EQ, Literal: "=="},
+		{Type: token.NOT_EQ, Literal: "!="},
 		{Type: token.NEWLINE, Literal: "\n"},
 		{Type: token.EOF, Literal: ""},
 	}

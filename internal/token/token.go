@@ -26,31 +26,37 @@ const (
 	CARET    TokenType = "^"
 	BANG     TokenType = "!"
 
-	ARROW TokenType = "=>"
-	// LT TokenType = "<"
-	// GT TokenType = ">"
-	// EQ     TokenType = "=="
-	// NOT_EQ TokenType = "!="
+	LT     TokenType = "<"
+	GT     TokenType = ">"
+	EQ     TokenType = "=="
+	NOT_EQ TokenType = "!="
 
 	// Delimiters
 	COMMA     TokenType = ","
 	SEMICOLON TokenType = ";"
 	NEWLINE   TokenType = "\n"
 
+	ARROW  TokenType = "=>"
 	LPAREN TokenType = "("
 	RPAREN TokenType = ")"
-	// LBRACE   TokenType = "{"
-	// RBRACE   TokenType = "}"
+	LBRACE TokenType = "{"
+	RBRACE TokenType = "}"
 	// LBRACKET TokenType = "["
 	// RBRACKET TokenType = "]"
 
 	// Keywords
-	// FUNCTION TokenType = "FUNCTION"
-	// TRUE     TokenType = "TRUE"
-	// FALSE    TokenType = "FALSE"
-	// IF       TokenType = "IF"
-	// ELSE     TokenType = "ELSE"
+	TRUE  TokenType = "TRUE"
+	FALSE TokenType = "FALSE"
+	IF    TokenType = "IF"
+	ELSE  TokenType = "ELSE"
 )
+
+var keywords = map[string]TokenType{
+	"true":  TRUE,
+	"false": FALSE,
+	"if":    IF,
+	"else":  ELSE,
+}
 
 var constants = map[string]struct{}{
 	"e":  {},
@@ -58,6 +64,9 @@ var constants = map[string]struct{}{
 }
 
 func LookupIdent(literal string) TokenType {
+	if tokenType, ok := keywords[literal]; ok {
+		return tokenType
+	}
 	if _, ok := constants[literal]; ok {
 		return CONSTANT
 	}
