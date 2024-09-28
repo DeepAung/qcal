@@ -18,6 +18,7 @@ f = (a, b) => a + b;
 f(e, pi)
 x = if (1 < 2 or false and true) { !false } else { true }
 < <= > >= == !=
+return
 `
 	expects := []token.Token{
 		{Type: token.IDENT, Literal: "x"},
@@ -97,6 +98,7 @@ x = if (1 < 2 or false and true) { !false } else { true }
 		{Type: token.GT_EQ, Literal: ">="},
 		{Type: token.EQ, Literal: "=="},
 		{Type: token.NOT_EQ, Literal: "!="},
+		{Type: token.RETURN, Literal: "return"},
 		{Type: token.EOF, Literal: ""},
 	}
 

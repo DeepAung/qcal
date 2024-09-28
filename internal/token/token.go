@@ -44,21 +44,23 @@ const (
 	RBRACE TokenType = "}"
 
 	// Keywords
-	TRUE  TokenType = "TRUE"
-	FALSE TokenType = "FALSE"
-	OR    TokenType = "OR"
-	AND   TokenType = "AND"
-	IF    TokenType = "IF"
-	ELSE  TokenType = "ELSE"
+	TRUE   TokenType = "TRUE"
+	FALSE  TokenType = "FALSE"
+	OR     TokenType = "OR"
+	AND    TokenType = "AND"
+	IF     TokenType = "IF"
+	ELSE   TokenType = "ELSE"
+	RETURN TokenType = "RETURN"
 )
 
 var keywords = map[string]TokenType{
-	"true":  TRUE,
-	"false": FALSE,
-	"or":    OR,
-	"and":   AND,
-	"if":    IF,
-	"else":  ELSE,
+	"true":   TRUE,
+	"false":  FALSE,
+	"or":     OR,
+	"and":    AND,
+	"if":     IF,
+	"else":   ELSE,
+	"return": RETURN,
 }
 
 var constants = map[string]struct{}{

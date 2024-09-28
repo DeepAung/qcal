@@ -68,6 +68,27 @@ func (ls *LetStatement) String() string {
 	return sb.String()
 }
 
+// ReturnStatement `return <expression | Value>`
+type ReturnStatement struct {
+	Token token.Token // the `return` token
+	Value Expression
+}
+
+func (rs *ReturnStatement) statementNode()       {}
+func (rs *ReturnStatement) TokenLiteral() string { return rs.Token.Literal }
+func (rs *ReturnStatement) String() string {
+	var sb strings.Builder
+
+	sb.WriteString(rs.TokenLiteral())
+	sb.WriteString(" ")
+	if rs.Value != nil {
+		sb.WriteString(rs.Value.String())
+	}
+	sb.WriteString(";")
+
+	return sb.String()
+}
+
 // ExpressionStatement
 type ExpressionStatement struct {
 	Token      token.Token
