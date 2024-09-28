@@ -105,6 +105,24 @@ func (es *ExpressionStatement) String() string {
 	return ""
 }
 
+// BlockStatement `{ statements }`
+type BlockStatement struct {
+	Token      token.Token // the `{` token
+	Statements []Statement
+}
+
+func (bs *BlockStatement) statementNode()       {}
+func (bs *BlockStatement) TokenLiteral() string { return bs.Token.Literal }
+func (bs *BlockStatement) String() string {
+	var sb strings.Builder
+
+	for _, stmt := range bs.Statements {
+		sb.WriteString(stmt.String())
+	}
+
+	return sb.String()
+}
+
 // Identifier
 type Identifier struct {
 	Token token.Token
@@ -201,8 +219,8 @@ func (ie *InfixExpression) String() string {
 type IfExpression struct {
 	Token       token.Token // the `if` token
 	Condition   Expression
-	Consequence Expression
-	Alternative Expression
+	Consequence *BlockStatement
+	Alternative *BlockStatement
 }
 
 func (ie *IfExpression) expressionNode()      {}
@@ -210,15 +228,13 @@ func (ie *IfExpression) TokenLiteral() string { return ie.Token.Literal }
 func (ie *IfExpression) String() string {
 	var sb strings.Builder
 
-	sb.WriteString("if (")
+	sb.WriteString("if")
 	sb.WriteString(ie.Condition.String())
-	sb.WriteString(") { ")
+	sb.WriteString(" ")
 	sb.WriteString(ie.Consequence.String())
-	sb.WriteString(" }")
 	if ie.Alternative != nil {
-		sb.WriteString(" else { ")
+		sb.WriteString(" ")
 		sb.WriteString(ie.Alternative.String())
-		sb.WriteString(" }")
 	}
 
 	return sb.String()
@@ -227,7 +243,7 @@ func (ie *IfExpression) String() string {
 type FunctionLiteral struct {
 	Token      token.Token // the `(` token
 	Parameters []*Identifier
-	Body       Expression
+	Body       *BlockStatement
 }
 
 func (fl *FunctionLiteral) expressionNode()      {}

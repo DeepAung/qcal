@@ -221,37 +221,52 @@ func (p *Parser) parseNumber() ast.Expression {
 
 func (p *Parser) parseIfExpression() ast.Expression {
 	exp := &ast.IfExpression{Token: p.curToken}
+
+	if !p.expectPeek(token.LPAREN) {
+		return nil
+	}
 	p.nextToken()
+
 	exp.Condition = p.parseExpression(LOWEST)
 
+	if !p.expectPeek(token.RPAREN) {
+		return nil
+	}
 	if !p.expectPeek(token.LBRACE) {
 		return nil
 	}
-	p.nextToken()
 
-	exp.Consequence = p.parseExpression(LOWEST)
-
-	if !p.expectPeek(token.RBRACE) {
-		return nil
-	}
+	exp.Consequence = p.parseBlockStatement()
 
 	if p.peekToken.Type != token.ELSE {
 		return exp
 	}
 	p.nextToken()
-
 	if !p.expectPeek(token.LBRACE) {
 		return nil
 	}
-	p.nextToken()
 
-	exp.Alternative = p.parseExpression(LOWEST)
-
-	if !p.expectPeek(token.RBRACE) {
-		return nil
-	}
+	exp.Alternative = p.parseBlockStatement()
 
 	return exp
+}
+
+func (p *Parser) parseBlockStatement() *ast.BlockStatement {
+	block := &ast.BlockStatement{
+		Token:      p.curToken,
+		Statements: make([]ast.Statement, 0),
+	}
+
+	p.nextToken()
+
+	for p.curToken.Type != token.RBRACE && p.curToken.Type != token.EOF {
+		if stmt := p.parseStatement(); stmt != nil {
+			block.Statements = append(block.Statements, stmt)
+		}
+		p.nextToken()
+	}
+
+	return block
 }
 
 func (p *Parser) parseGroupedExpressionOrFunctionLiteral() ast.Expression {
