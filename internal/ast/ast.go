@@ -21,6 +21,11 @@ type Expression interface {
 	expressionNode()
 }
 
+type FunctionLiteral interface {
+	Node
+	functionLiteralNode()
+}
+
 // Program
 type Program struct {
 	Statements []Statement
@@ -240,33 +245,59 @@ func (ie *IfExpression) String() string {
 	return sb.String()
 }
 
-type FunctionLiteral struct {
-	Token      token.Token // the `(` token
+type NormalFunctionLiteral struct {
+	Token      token.Token // the `=>` token
 	Parameters []*Identifier
 	Body       *BlockStatement
 }
 
-func (fl *FunctionLiteral) expressionNode()      {}
-func (fl *FunctionLiteral) TokenLiteral() string { return fl.Token.Literal }
-func (fl *FunctionLiteral) String() string {
+func (nfl *NormalFunctionLiteral) expressionNode()      {}
+func (nfl *NormalFunctionLiteral) functionLiteralNode() {}
+func (nfl *NormalFunctionLiteral) TokenLiteral() string { return nfl.Token.Literal }
+func (nfl *NormalFunctionLiteral) String() string {
 	var sb strings.Builder
 
 	params := []string{}
-	for _, p := range fl.Parameters {
+	for _, p := range nfl.Parameters {
 		params = append(params, p.String())
 	}
 
 	sb.WriteString("(")
 	sb.WriteString(strings.Join(params, ", "))
 	sb.WriteString(") => ")
-	sb.WriteString(fl.Body.String())
+	sb.WriteString(nfl.Body.String())
+
+	return sb.String()
+}
+
+type ConciseFunctionLiteral struct {
+	Token      token.Token // the `=>` token
+	Parameters []*Identifier
+	Body       Expression
+}
+
+func (cfl *ConciseFunctionLiteral) expressionNode()      {}
+func (cfl *ConciseFunctionLiteral) functionLiteralNode() {}
+func (cfl *ConciseFunctionLiteral) TokenLiteral() string { return cfl.Token.Literal }
+func (cfl *ConciseFunctionLiteral) String() string {
+	var sb strings.Builder
+
+	params := []string{}
+	for _, p := range cfl.Parameters {
+		params = append(params, p.String())
+	}
+
+	sb.WriteString("(")
+	sb.WriteString(strings.Join(params, ", "))
+	sb.WriteString(") => ")
+	sb.WriteString(cfl.Body.String())
 
 	return sb.String()
 }
 
 type CallExpression struct {
 	Token     token.Token // the `(` token
-	Function  Expression  // Identifier or FunctionLiteral
+	Function  *Identifier
 	Arguments []Expression
 }
 
