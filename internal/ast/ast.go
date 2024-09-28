@@ -22,7 +22,7 @@ type Expression interface {
 }
 
 type FunctionLiteral interface {
-	Node
+	Expression
 	functionLiteralNode()
 }
 

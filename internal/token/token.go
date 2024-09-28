@@ -12,9 +12,8 @@ const (
 	EOF     TokenType = "EOF"
 
 	// Identifiers + Literals
-	IDENT    TokenType = "IDENT"
-	NUMBER   TokenType = "NUMBER" // e.g. "123", "112.", ".20", "122.02"
-	CONSTANT TokenType = "CONSTANT"
+	IDENT  TokenType = "IDENT"
+	NUMBER TokenType = "NUMBER" // e.g. "123", "112.", ".20", "122.02"
 
 	// Operators
 	ASSIGN   TokenType = "="
@@ -63,17 +62,9 @@ var keywords = map[string]TokenType{
 	"return": RETURN,
 }
 
-var constants = map[string]struct{}{
-	"e":  {},
-	"pi": {},
-}
-
 func LookupIdent(literal string) TokenType {
 	if tokenType, ok := keywords[literal]; ok {
 		return tokenType
-	}
-	if _, ok := constants[literal]; ok {
-		return CONSTANT
 	}
 	return IDENT
 }
