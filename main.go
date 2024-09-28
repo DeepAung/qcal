@@ -5,13 +5,16 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/DeepAung/qcal/calculator"
+	"github.com/DeepAung/qcal/internal/evaluator"
+	"github.com/DeepAung/qcal/internal/lexer"
+	"github.com/DeepAung/qcal/internal/object"
+	"github.com/DeepAung/qcal/internal/parser"
 )
 
 func main() {
-	calc := calculator.NewCalculator()
-
 	scanner := bufio.NewScanner(os.Stdin)
+	env := object.NewEnvironment()
+
 	for {
 		fmt.Print("input math expression: ")
 		if !scanner.Scan() {
@@ -22,11 +25,21 @@ func main() {
 			break
 		}
 
-		result, err := calc.Calculate([]byte(input))
-		if err != nil {
-			fmt.Printf("error: %v\n", err)
-		} else {
-			fmt.Println(result)
+		l := lexer.New(input)
+		p := parser.New(l)
+		program, errors := p.ParseProgram()
+		if errors != nil && len(errors) > 0 {
+			fmt.Println("error:")
+			for _, msg := range errors {
+				fmt.Println("\t- ", msg)
+			}
 		}
+
+		obj := evaluator.Eval(program, env)
+		if obj == nil {
+			continue
+		}
+
+		fmt.Println(obj.Inspect())
 	}
 }
