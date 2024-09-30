@@ -30,7 +30,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 			return newError("cannot assign value to the builtin constant %q", node.Name.Value)
 		}
 		val := Eval(node.Value, env)
-		if isError(val) {
+		if IsError(val) {
 			return val
 		}
 		env.Set(node.Name.Value, val)
@@ -38,7 +38,7 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 
 	case *ast.ReturnStatement:
 		val := Eval(node.Value, env)
-		if isError(val) {
+		if IsError(val) {
 			return val
 		}
 		return &object.ReturnValue{Value: val}
@@ -60,25 +60,25 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 
 	case *ast.PrefixExpression:
 		right := Eval(node.Right, env)
-		if isError(right) {
+		if IsError(right) {
 			return right
 		}
 		return evalPrefixExpression(node.Operator, right)
 
 	case *ast.PostfixExpression:
 		left := Eval(node.Left, env)
-		if isError(left) {
+		if IsError(left) {
 			return left
 		}
 		return evalPostfixExpression(node.Operator, left)
 
 	case *ast.InfixExpression:
 		left := Eval(node.Left, env)
-		if isError(left) {
+		if IsError(left) {
 			return left
 		}
 		right := Eval(node.Right, env)
-		if isError(right) {
+		if IsError(right) {
 			return right
 		}
 		return evalInfixExpression(node.Operator, left, right)
@@ -88,12 +88,12 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 
 	case *ast.CallExpression:
 		fn := Eval(node.Function, env)
-		if isError(fn) {
+		if IsError(fn) {
 			return fn
 		}
 
 		args := evalExpressions(node.Arguments, env)
-		if len(args) == 1 && isError(args[0]) {
+		if len(args) == 1 && IsError(args[0]) {
 			return args[0]
 		}
 
@@ -242,7 +242,7 @@ func evalBooleanInfixExpression(operator string, left, right object.Object) obje
 
 func evalIfExpression(ie *ast.IfExpression, env *object.Environment) object.Object {
 	condition := Eval(ie.Condition, env)
-	if isError(condition) {
+	if IsError(condition) {
 		return condition
 	}
 
@@ -276,7 +276,7 @@ func evalExpressions(exps []ast.Expression, env *object.Environment) []object.Ob
 
 	for _, e := range exps {
 		obj := Eval(e, env)
-		if isError(obj) {
+		if IsError(obj) {
 			return []object.Object{obj}
 		}
 		results = append(results, obj)
@@ -289,12 +289,18 @@ func applyFunction(fn object.Object, args []object.Object) object.Object {
 	switch fn := fn.(type) {
 
 	case *object.NormalFunction:
-		env := createEnv(fn.Parameters, args)
+		env, err := createEnv(fn.Parameters, args)
+		if err != nil {
+			return err
+		}
 		evaluated := Eval(fn.Body, env)
 		return unwrapReturnValue(evaluated)
 
 	case *object.ConciseFunction:
-		env := createEnv(fn.Parameters, args)
+		env, err := createEnv(fn.Parameters, args)
+		if err != nil {
+			return err
+		}
 		evaluated := Eval(fn.Body, env)
 		return unwrapReturnValue(evaluated)
 
@@ -306,12 +312,21 @@ func applyFunction(fn object.Object, args []object.Object) object.Object {
 	}
 }
 
-func createEnv(params []*ast.Identifier, args []object.Object) *object.Environment {
+func createEnv(
+	params []*ast.Identifier,
+	args []object.Object,
+) (*object.Environment, *object.Error) {
+	if len(args) < len(params) {
+		return nil, newError("not enough arguments, expect=%d, got=%d", len(params), len(args))
+	} else if len(args) > len(params) {
+		return nil, newError("too many arguments, expect=%d, got=%d", len(params), len(args))
+	}
+
 	env := object.NewEnvironment()
 	for i, param := range params {
 		env.Set(param.Value, args[i])
 	}
-	return env
+	return env, nil
 }
 
 func unwrapReturnValue(obj object.Object) object.Object {
@@ -348,7 +363,7 @@ func newError(format string, a ...any) *object.Error {
 	return &object.Error{Message: fmt.Sprintf(format, a...)}
 }
 
-func isError(obj object.Object) bool {
+func IsError(obj object.Object) bool {
 	if obj == nil {
 		return false
 	}
