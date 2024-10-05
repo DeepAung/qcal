@@ -657,6 +657,35 @@ func TestCallExpression(t *testing.T) {
 	testInfixExpression(t, exp.Arguments[2], 4, "+", 5)
 }
 
+func TestNestedCallExpression(t *testing.T) {
+	input := "add(1)(4);"
+
+	l := lexer.New(input)
+	p := New(l)
+	program, errors := p.ParseProgram()
+	checkParserErrors(t, errors)
+	testProgramStatement(t, program, &ast.ExpressionStatement{})
+
+	stmt := program.Statements[0].(*ast.ExpressionStatement)
+
+	exp, ok := stmt.Expression.(*ast.CallExpression)
+	if !ok {
+		t.Fatalf(
+			"invalid stmt.Expression type, expect=*ast.CallExpression, got=%T",
+			stmt.Expression,
+		)
+	}
+
+	testLiteralExpression(t, exp.Arguments[0], 4)
+	innerExp, ok := exp.Function.(*ast.CallExpression)
+	if !ok {
+		t.Fatalf("")
+	}
+
+	testIdentifier(t, innerExp.Function, "add")
+	testLiteralExpression(t, innerExp.Arguments[0], 1)
+}
+
 // ------------------------------------------------------------------ //
 
 func checkParserErrors(t *testing.T, errors []string) {

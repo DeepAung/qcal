@@ -466,15 +466,15 @@ func (p *Parser) parseInfixExpression(left ast.Expression) ast.Expression {
 }
 
 func (p *Parser) parseCallExpression(left ast.Expression) ast.Expression {
-	funcIdent, ok := left.(*ast.Identifier)
-	if !ok {
+	switch left := left.(type) {
+	case *ast.Identifier, *ast.CallExpression:
+		exp := &ast.CallExpression{Token: p.curToken, Function: left}
+		exp.Arguments = p.parseExpressionList(token.RPAREN)
+		return exp
+	default:
 		p.errors = append(p.errors, fmt.Sprintf("cannot call a function of %q", left.String()))
 		return nil
 	}
-
-	exp := &ast.CallExpression{Token: p.curToken, Function: funcIdent}
-	exp.Arguments = p.parseExpressionList(token.RPAREN)
-	return exp
 }
 
 func (p *Parser) parseExpressionList(end token.TokenType) []ast.Expression {

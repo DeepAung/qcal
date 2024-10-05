@@ -297,7 +297,7 @@ func (cfl *ConciseFunctionLiteral) String() string {
 
 type CallExpression struct {
 	Token     token.Token // the `(` token
-	Function  *Identifier
+	Function  Expression  // *Identifier or *CallExpression
 	Arguments []Expression
 }
 

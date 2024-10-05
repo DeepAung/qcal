@@ -69,6 +69,7 @@ func (rv *ReturnValue) Inspect() string  { return rv.Value.Inspect() }
 type NormalFunction struct {
 	Parameters []*ast.Identifier
 	Body       *ast.BlockStatement
+	Env        *Environment
 }
 
 func (f *NormalFunction) Type() ObjectType { return FUNCTION_OBJ }
@@ -92,6 +93,7 @@ func (f *NormalFunction) Inspect() string {
 type ConciseFunction struct {
 	Parameters []*ast.Identifier
 	Body       ast.Expression
+	Env        *Environment
 }
 
 func (f *ConciseFunction) Type() ObjectType { return FUNCTION_OBJ }

@@ -53,10 +53,10 @@ func Eval(node ast.Node, env *object.Environment) object.Object {
 		return evalIdentifier(node, env)
 
 	case *ast.NormalFunctionLiteral:
-		return &object.NormalFunction{Parameters: node.Parameters, Body: node.Body}
+		return &object.NormalFunction{Parameters: node.Parameters, Body: node.Body, Env: env}
 
 	case *ast.ConciseFunctionLiteral:
-		return &object.ConciseFunction{Parameters: node.Parameters, Body: node.Body}
+		return &object.ConciseFunction{Parameters: node.Parameters, Body: node.Body, Env: env}
 
 	case *ast.PrefixExpression:
 		right := Eval(node.Right, env)
@@ -295,11 +295,8 @@ func applyFunction(fn object.Object, args []object.Object) object.Object {
 			return newError("too many arguments, expect=%d, got=%d", len(fn.Parameters), len(args))
 		}
 
-		env, err := createEnv(fn.Parameters, args)
-		if err != nil {
-			return err
-		}
-		evaluated := Eval(fn.Body, env)
+		extendedEnv := extendFunctionEnv(fn.Env, fn.Parameters, args)
+		evaluated := Eval(fn.Body, extendedEnv)
 		return unwrapReturnValue(evaluated)
 
 	case *object.ConciseFunction:
@@ -309,11 +306,8 @@ func applyFunction(fn object.Object, args []object.Object) object.Object {
 			return newError("too many arguments, expect=%d, got=%d", len(fn.Parameters), len(args))
 		}
 
-		env, err := createEnv(fn.Parameters, args)
-		if err != nil {
-			return err
-		}
-		evaluated := Eval(fn.Body, env)
+		extendedEnv := extendFunctionEnv(fn.Env, fn.Parameters, args)
+		evaluated := Eval(fn.Body, extendedEnv)
 		return unwrapReturnValue(evaluated)
 
 	case object.BuiltinFunction:
@@ -324,15 +318,16 @@ func applyFunction(fn object.Object, args []object.Object) object.Object {
 	}
 }
 
-func createEnv(
+func extendFunctionEnv(
+	env *object.Environment,
 	params []*ast.Identifier,
 	args []object.Object,
-) (*object.Environment, *object.Error) {
-	env := object.NewEnvironment()
+) *object.Environment {
+	extendedEnv := object.NewEnclosedEnvironment(env)
 	for i, param := range params {
-		env.Set(param.Value, args[i])
+		extendedEnv.Set(param.Value, args[i])
 	}
-	return env, nil
+	return extendedEnv
 }
 
 func unwrapReturnValue(obj object.Object) object.Object {
