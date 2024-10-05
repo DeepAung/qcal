@@ -289,6 +289,12 @@ func applyFunction(fn object.Object, args []object.Object) object.Object {
 	switch fn := fn.(type) {
 
 	case *object.NormalFunction:
+		if len(args) < len(fn.Parameters) {
+			return newError("not enough arguments, expect=%d, got=%d", len(fn.Parameters), len(args))
+		} else if len(args) > len(fn.Parameters) {
+			return newError("too many arguments, expect=%d, got=%d", len(fn.Parameters), len(args))
+		}
+
 		env, err := createEnv(fn.Parameters, args)
 		if err != nil {
 			return err
@@ -297,6 +303,12 @@ func applyFunction(fn object.Object, args []object.Object) object.Object {
 		return unwrapReturnValue(evaluated)
 
 	case *object.ConciseFunction:
+		if len(args) < len(fn.Parameters) {
+			return newError("not enough arguments, expect=%d, got=%d", len(fn.Parameters), len(args))
+		} else if len(args) > len(fn.Parameters) {
+			return newError("too many arguments, expect=%d, got=%d", len(fn.Parameters), len(args))
+		}
+
 		env, err := createEnv(fn.Parameters, args)
 		if err != nil {
 			return err
@@ -304,8 +316,8 @@ func applyFunction(fn object.Object, args []object.Object) object.Object {
 		evaluated := Eval(fn.Body, env)
 		return unwrapReturnValue(evaluated)
 
-	case *object.BuiltinFunction:
-		return fn.Fn(args...)
+	case object.BuiltinFunction:
+		return fn(args...)
 
 	default:
 		return newError("not a function: %s", fn.Type())
@@ -316,12 +328,6 @@ func createEnv(
 	params []*ast.Identifier,
 	args []object.Object,
 ) (*object.Environment, *object.Error) {
-	if len(args) < len(params) {
-		return nil, newError("not enough arguments, expect=%d, got=%d", len(params), len(args))
-	} else if len(args) > len(params) {
-		return nil, newError("too many arguments, expect=%d, got=%d", len(params), len(args))
-	}
-
 	env := object.NewEnvironment()
 	for i, param := range params {
 		env.Set(param.Value, args[i])
@@ -361,6 +367,10 @@ func isTruthy(obj object.Object) bool {
 
 func newError(format string, a ...any) *object.Error {
 	return &object.Error{Message: fmt.Sprintf(format, a...)}
+}
+
+func newNumber(val float64) *object.Number {
+	return &object.Number{Value: val}
 }
 
 func IsError(obj object.Object) bool {

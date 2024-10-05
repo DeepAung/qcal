@@ -111,9 +111,7 @@ func (f *ConciseFunction) Inspect() string {
 	return sb.String()
 }
 
-type BuiltinFunction struct {
-	Fn func(args ...Object) Object
-}
+type BuiltinFunction func(args ...Object) Object
 
-func (b *BuiltinFunction) Type() ObjectType { return BUILTIN_FUNCTION_OBJ }
-func (b *BuiltinFunction) Inspect() string  { return "builtin function" }
+func (b BuiltinFunction) Type() ObjectType { return BUILTIN_FUNCTION_OBJ }
+func (b BuiltinFunction) Inspect() string  { return "builtin function" }
