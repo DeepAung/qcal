@@ -18,8 +18,16 @@ type builtinFuncInfo struct {
 }
 
 var infos = map[string]builtinFuncInfo{
-	"min":   {name: "min", len: 2, types: []object.ObjectType{object.NUMBER_OBJ}},
-	"max":   {name: "max", len: 2, types: []object.ObjectType{object.NUMBER_OBJ}},
+	"min": {
+		name:  "min",
+		len:   2,
+		types: []object.ObjectType{object.NUMBER_OBJ, object.NUMBER_OBJ},
+	},
+	"max": {
+		name:  "max",
+		len:   2,
+		types: []object.ObjectType{object.NUMBER_OBJ, object.NUMBER_OBJ},
+	},
 	"abs":   {name: "abs", len: 1, types: []object.ObjectType{object.NUMBER_OBJ}},
 	"ceil":  {name: "ceil", len: 1, types: []object.ObjectType{object.NUMBER_OBJ}},
 	"floor": {name: "floor", len: 1, types: []object.ObjectType{object.NUMBER_OBJ}},
@@ -28,11 +36,19 @@ var infos = map[string]builtinFuncInfo{
 	"sqrt": {name: "sqrt", len: 1, types: []object.ObjectType{object.NUMBER_OBJ}},
 	"cbrt": {name: "cbrt", len: 1, types: []object.ObjectType{object.NUMBER_OBJ}},
 
-	"log":   {name: "log", len: 2, types: []object.ObjectType{object.NUMBER_OBJ}},
+	"log": {
+		name:  "log",
+		len:   2,
+		types: []object.ObjectType{object.NUMBER_OBJ, object.NUMBER_OBJ},
+	},
 	"ln":    {name: "ln", len: 1, types: []object.ObjectType{object.NUMBER_OBJ}},
 	"log10": {name: "log10", len: 1, types: []object.ObjectType{object.NUMBER_OBJ}},
 	"log2":  {name: "log2", len: 1, types: []object.ObjectType{object.NUMBER_OBJ}},
-	"pow":   {name: "pow", len: 2, types: []object.ObjectType{object.NUMBER_OBJ}},
+	"pow": {
+		name:  "pow",
+		len:   2,
+		types: []object.ObjectType{object.NUMBER_OBJ, object.NUMBER_OBJ},
+	},
 	"pow10": {name: "pow10", len: 1, types: []object.ObjectType{object.NUMBER_OBJ}},
 
 	"sin":     {name: "sin", len: 1, types: []object.ObjectType{object.NUMBER_OBJ}},
@@ -49,7 +65,11 @@ var infos = map[string]builtinFuncInfo{
 	"arctanh": {name: "arctanh", len: 1, types: []object.ObjectType{object.NUMBER_OBJ}},
 
 	"gamma": {name: "gamma", len: 1, types: []object.ObjectType{object.NUMBER_OBJ}},
-	"hypot": {name: "hypot", len: 2, types: []object.ObjectType{object.NUMBER_OBJ}},
+	"hypot": {
+		name:  "hypot",
+		len:   2,
+		types: []object.ObjectType{object.NUMBER_OBJ, object.NUMBER_OBJ},
+	},
 
 	// "Exp":         {name: "Exp", len: 1, types: []object.ObjectType{object.NUMBER_OBJ}},
 	// "Exp2":        {name: "Exp2", len: 1, types: []object.ObjectType{object.NUMBER_OBJ}},
